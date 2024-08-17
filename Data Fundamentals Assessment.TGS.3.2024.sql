@@ -1,11 +1,15 @@
 -- "Run on click" scripting --
 /* delete this if you don't want my code to add a new databse to your server! */
 
-CREATE DBO TomsTestDBO;
-USE TomsTestDBO;
-Create schema TomsTest
-Create user reviewer with password = '';
-ALTER USER reviewer WITH DEFAULT_SCHEMA = TomsTest
+IF (NOT EXISTS (SELECT * FROM sys.databases where name = 'TomsTestDB')) 
+BEGIN
+    CREATE DATABASE TomsTestDB;
+END;
+USE TomsTestDB;
+IF (SCHEMA_ID('TomsTest') IS NULL) 
+BEGIN
+    EXEC ('CREATE SCHEMA [TomsTest] AUTHORIZATION [dbo]')
+END
 
 --1--
 
