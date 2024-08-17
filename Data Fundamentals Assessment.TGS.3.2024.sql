@@ -12,7 +12,7 @@ BEGIN
 END
 
 --1--
-/* Each query contains logic to create its requisite table before the question. */
+/* Each query contains logic to create its requisite table before the question. The IF statement enables each table creation to execute independently even if you modify one of the queries */
 IF (NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'parkinglot' AND schema_id = SCHEMA_ID('TomsTest')))
 BEGIN
 
@@ -56,7 +56,7 @@ WITH pos_indeces AS (
     charindex('/', txt) AS first_slash,
     charindex('/', txt, (charindex('/', txt, 1))+1) AS second_slash,
     charindex('$', txt) AS cashmoney
-    from parkinglot)
+    from TomsTest.parkinglot)
 
 SELECT
 substring(txt, 1, [first_slash]-1) AS vehicle,
@@ -226,7 +226,7 @@ WITH cnt_codes AS (
 SELECT
 parent_loc,
 COUNT(code) AS cnt
-FROM loc
+FROM TomsTest.loc
 GROUP BY parent_loc
 )
 
@@ -285,11 +285,11 @@ SELECT
     SUM(amount) AS totalamount, 
     COUNT(*) AS cnt 
 FROM 
-    asset
+    TomsTest.asset
 WHERE 
     account_num IN (
         SELECT account_num 
-        FROM asset 
+        FROM tomstest.asset 
         WHERE currency_code IN ('EUR', 'GBP')
         GROUP BY account_num
         HAVING COUNT(DISTINCT currency_code) = 2
@@ -301,15 +301,38 @@ GROUP BY
 --6--
 /* Table relationship practice; see ERD in question PDF */
 
-IF (NOT EXISTS (SELECT * FROM sys.tables WHERE name IN ('invoice', 'payment', 'transact', 'currency') AND schema_id = SCHEMA_ID('TomsTest')))
+IF (NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'currency' AND schema_id = SCHEMA_ID('TomsTest')))
+BEGIN
+    CREATE TABLE TomsTest.currency (
+        CurrencyCode NVARCHAR(3) NOT NULL PRIMARY KEY,
+        CurrencyName NVARCHAR(36)
+    );
+END;
+GO
+
+IF (NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'transact' AND schema_id = SCHEMA_ID('TomsTest')))
+BEGIN
+    CREATE TABLE TomsTest.transact (
+        TransactID VARCHAR(25) NOT NULL PRIMARY KEY,
+        TransactDate DATE
+    );
+END;
+GO
+
+IF (NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'invoice' AND schema_id = SCHEMA_ID('TomsTest')))
 BEGIN
     CREATE TABLE TomsTest.invoice (
         InvoiceNum VARCHAR(20) NOT NULL PRIMARY KEY,
         InvoiceDate DATE,
         InvoiceAmount DECIMAL(10,2),
         CurrencyCode NVARCHAR(3) NOT NULL,
-        FOREIGN KEY (CurrencyCode) REFERENCES currency(CurrencyCode)
+        FOREIGN KEY (CurrencyCode) REFERENCES TomsTest.currency(CurrencyCode)
     );
+END;
+GO
+
+IF (NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'payment' AND schema_id = SCHEMA_ID('TomsTest')))
+BEGIN
     CREATE TABLE TomsTest.payment (
         InvoiceNum VARCHAR(20) NOT NULL,
         TransactID VARCHAR(25) NOT NULL,
@@ -320,12 +343,5 @@ BEGIN
         FOREIGN KEY (TransactID) REFERENCES TomsTest.transact(TransactID),
         FOREIGN KEY (CurrencyCode) REFERENCES TomsTest.currency(CurrencyCode)
     );
-    CREATE TABLE TomsTest.currency (
-        CurrencyCode NVARCHAR(3) NOT NULL PRIMARY KEY,
-        CurrencyName NVARCHAR(36),
-    );
-    CREATE TABLE TomsTest.transact (
-        TransactID VARCHAR(25) NOT NULL PRIMARY KEY,
-        TransactDate date,
-    );
 END;
+GO
