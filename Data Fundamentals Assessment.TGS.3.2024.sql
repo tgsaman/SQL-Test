@@ -10,6 +10,24 @@ INSERT INTO parkinglot (txt) VALUES
 ,('RA8H5G/AROBINSON/2022-05-17$27.50')
 ,('RX64421/KSMITH/2022-05-16$21.50');
 
+/* Write a query to extract four columns from the above data based on the following assumptions:
+vehicle will be the string that comes before the first / character; name the string between the two
+/s and immediately before the date; dt the date, which is always in the format YYYY-MM-DD;
+amount which is at the end of the string, always preceded by the $ sign.
+
+In your query, convert the amount column to a DECIMAL and the dt column to a DATE. The result of
+your query should be:
+
+vehicle  name       dt          amount
+-------- ---------- ----------- -------
+354FKH   JKELLER    2022-05-17  64.50
+BMR3408  RJEFFREY   2022-05-18  101.90
+KFD478   PMURPHY    2022-05-16  35.85
+KFD918   JRIMBAUD   2022-05-16  21.50
+PA42391  RDYLAN     2022-05-17  21.50
+RA8H5G   AROBINSON  2022-05-17  27.50
+RX64421  KSMITH     2022-05-16  21.50 */
+
 select* from parkinglot;
 
 with pos_indeces AS (
@@ -48,6 +66,21 @@ VALUES
 ,('BF', '2021-01-15', 121)
 ,('BF', '2021-02-15', 104);
 
+/* Write a query to show regions, dates, new_cases plus a percentage (new_cases as a percentage of
+the total population of the region), and the cumulative total of cases (total new_cases for the
+region up until that date). The number of decimal places in the percentage is not important - no
+need to round it. The result shoul be as follows:
+
+region_code region_name      dt         new_cases  pct          cumulative_total
+----------- ---------------- ---------- ---------- ------------ -----------------
+AA          Region 1 (AA)    2021-01-01 226        0.049        226
+AA          Region 1 (AA)    2021-01-15 280        0.061        506
+AA          Region 1 (AA)    2021-02-01 220        0.048        726
+AA          Region 1 (AA)    2021-02-15 199        0.044        925
+BF          Region 2 (BF)    2021-01-01 140        0.027        140
+BF          Region 2 (BF)    2021-01-15 121        0.023        261
+BF          Region 2 (BF)    2021-02-15 104        0.020        365 */
+
 SELECT
 inf.region_code,
 region_name,
@@ -70,7 +103,20 @@ INSERT INTO trade (dt, seller_username, buyer_username) VALUES
 ,('2019-02-01 09:31:39','kthomas','jbennet')
 ,('2019-02-01 10:21:22','rjones','esmith');
 
-select* from trade
+/* Write a query that returns all the buyers and sellers
+in a single column with the date and a role column that identifies whether the user is a buyer or a
+seller. The required output is shown below.
+
+username   dt                          role
+---------- --------------------------- ------
+wcollins   2019-02-01 08:14:31         SELLER
+esmith     2019-02-01 09:22:57         SELLER
+kthomas    2019-02-01 09:31:39         SELLER
+rjones     2019-02-01 10:21:22         SELLER
+rjones     2019-02-01 08:14:31         BUYER
+zchandler  2019-02-01 09:22:57         BUYER
+jbennet    2019-02-01 09:31:39         BUYER
+esmith     2019-02-01 10:21:22         BUYER */
 
 SELECT 
 buyer_username as username,
@@ -98,7 +144,20 @@ INSERT INTO loc (code, name, parent_loc) VALUES
 ,('SI', 'Staten Island','NYC')
 ,('ABY', 'Albany','NY');
 
-select top (10) * from loc;
+/* Write a query that returns every location with a count of how many sublocations it has directly within it. Each location except USA has a “parent” location that contains it. 
+Your answer should be as follows:
+
+code       name                 cnt
+---------- -------------------- -----------
+ABY        Albany               0
+BK         Brooklyn             0
+BX         Bronx                0
+MN         Manhattan            0
+NY         New York State       2
+NYC        New York City        5
+QN         Queens               0
+SI         Staten Island        0
+USA        United States        1 */ 
 
 with cnt_codes as (
 SELECT
