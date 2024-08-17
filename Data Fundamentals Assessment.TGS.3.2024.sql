@@ -266,26 +266,24 @@ A32814      USD           191400.00    1
 A70155      EUR           221230.00    2
 A70155      GBP           601000.00    1 */
 
-WITH AccountFilter AS (
-    SELECT 
-        account_num
-    FROM 
-        asset
-    WHERE 
-        currency_code IN ('EUR', 'GBP')
-    GROUP BY 
-        account_num
-    HAVING 
-        COUNT(DISTINCT currency_code) = 2
-)
 SELECT 
     account_num, 
     currency_code, 
     SUM(amount) AS totalamount, 
-    COUNT(account_num) AS cnt 
-    FROM asset 
-    WHERE account_num IN (SELECT account_num FROM AccountFilter)
-    GROUP BY account_num, currency_code;
+    COUNT(*) AS cnt 
+FROM 
+    asset
+WHERE 
+    account_num IN (
+        SELECT account_num 
+        FROM asset 
+        WHERE currency_code IN ('EUR', 'GBP')
+        GROUP BY account_num
+        HAVING COUNT(DISTINCT currency_code) = 2
+    )
+GROUP BY 
+    account_num, 
+    currency_code;
 
 --6--
 /* Schema setup practice; see ERD in question PDF */
