@@ -12,9 +12,10 @@ BEGIN
 END
 
 --1--
-
+/* Each query contains logic to create its requisite table before the question. */
 IF (NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'parkinglot' AND schema_id = SCHEMA_ID('TomsTest')))
 BEGIN
+
     CREATE TABLE TomsTest.parkinglot (
         txt VARCHAR(500) NOT NULL PRIMARY KEY
     );
@@ -27,10 +28,11 @@ BEGIN
         ('PA42391/RDYLAN/2022-05-17$21.50'),
         ('RA8H5G/AROBINSON/2022-05-17$27.50'),
         ('RX64421/KSMITH/2022-05-16$21.50');
+
 END;
 GO
 
-/* Write a query to extract four columns from the above data based on the following assumptions:
+/* 1. Write a query to extract four columns from the above data based on the following assumptions:
 vehicle will be the string that comes before the first / character; name the string between the two
 /s and immediately before the date; dt the date, which is always in the format YYYY-MM-DD;
 amount which is at the end of the string, always preceded by the $ sign.
@@ -64,9 +66,10 @@ CAST(substring(txt, [cashmoney]+1, len(txt)-[cashmoney]+1) AS DECIMAL(6,2)) AS a
 FROM pos_indeces;
 
 --2--
-
+/* Each query contains logic to create its requisite table before the question. */
 IF (NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'region' AND schema_id = SCHEMA_ID('TomsTest')))
 BEGIN
+
     CREATE TABLE TomsTest.region (
         region_code VARCHAR(10) NOT NULL PRIMARY KEY, 
         region_name VARCHAR(50) NOT NULL, 
@@ -77,11 +80,13 @@ BEGIN
         ('AA', 'Region 1 (AA)', 457040),
         ('BF', 'Region 2 (BF)', 527280),
         ('CM', 'Region 3 (CM)', 301680);
+
 END;
 GO
 
 IF (NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'infection' AND schema_id = SCHEMA_ID('TomsTest')))
 BEGIN
+
     CREATE TABLE TomsTest.infection (
         region_code VARCHAR(10) NOT NULL REFERENCES TomsTest.region (region_code), 
         dt DATE NOT NULL, 
@@ -97,10 +102,11 @@ BEGIN
         ('BF', '2021-01-01', 140),
         ('BF', '2021-01-15', 121),
         ('BF', '2021-02-15', 104);
+
 END;
 GO
 
-/* Write a query to show regions, dates, new_cases plus a percentage (new_cases as a percentage of
+/* 2. Write a query to show regions, dates, new_cases plus a percentage (new_cases as a percentage of
 the total population of the region), and the cumulative total of cases (total new_cases for the
 region up until that date). The number of decimal places in the percentage is not important - no
 need to round it. The result shoul be as follows:
@@ -128,9 +134,10 @@ ORDER BY inf.dt DESC;
 GO
 
 --3--
-
+/* Each query contains logic to create its requisite table before the question. */
 IF (NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'trade' AND schema_id = SCHEMA_ID('TomsTest')))
 BEGIN
+
    CREATE TABLE TomsTest.trade (
        dt DATETIME2(0) NOT NULL PRIMARY KEY, 
        seller_username VARCHAR(50) NOT NULL, 
@@ -143,10 +150,11 @@ BEGIN
     ('2019-02-01 09:22:57', 'esmith', 'zchandler'),
     ('2019-02-01 09:31:39', 'kthomas', 'jbennet'),
     ('2019-02-01 10:21:22', 'rjones', 'esmith');
+
 END;
 GO
 
-/* Write a query that returns all the buyers and sellers
+/* 3. Write a query that returns all the buyers and sellers
 in a single column with the date and a role column that identifies whether the user is a buyer or a
 seller. The required output is shown below.
 
@@ -175,9 +183,10 @@ FROM TomsTest.trade;
 GO
 
 --4--
-
+/* Each query contains logic to create its requisite table before the question. */
 IF (NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'loc' AND schema_id = SCHEMA_ID('TomsTest')))
 BEGIN
+
     CREATE TABLE TomsTest.loc (
         code VARCHAR(10) NOT NULL PRIMARY KEY, 
         name VARCHAR(20) NOT NULL UNIQUE,
@@ -194,10 +203,11 @@ BEGIN
         ('QN', 'Queens', 'NYC'),
         ('SI', 'Staten Island', 'NYC'),
         ('ABY', 'Albany', 'NY');
+
 END;
 GO
 
-/* Write a query that returns every location with a count of how many sublocations it has directly within it. Each location except USA has a “parent” location that contains it. 
+/* 4. Write a query that returns every location with a count of how many sublocations it has directly within it. Each location except USA has a “parent” location that contains it. 
 Your answer should be as follows:
 
 code       name                 cnt
@@ -228,9 +238,11 @@ FROM TomsTest.loc
 LEFT JOIN cnt_codes ON loc.code = cnt_codes.parent_loc;
 GO
 
--- 5-- 
+--5-- 
+/* Each query contains logic to create its requisite table before the question. */
 IF (NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'asset' AND schema_id = SCHEMA_ID('TomsTest')))
 BEGIN
+
     CREATE TABLE TomsTest.asset (
         asset_num INTEGER NOT NULL PRIMARY KEY, 
         account_num VARCHAR(10) NOT NULL,
@@ -250,10 +262,11 @@ BEGIN
     (18,'A32814','EUR', 45500),
     (19,'A83866','EUR', 23850),
     (20,'A83866','EUR',118090);
+
 END;
 GO
 
-/* Write a query that returns one row per account_num and currency code, but filter results to just the accounts where both EUR and
+/* 5. Write a query that returns one row per account_num and currency code, but filter results to just the accounts where both EUR and
 GBP currency_codes are present. Include the total amount and a count of the number of rows in the original table. 
 
 Your result should have 5 rows as follows:
@@ -286,4 +299,33 @@ GROUP BY
     currency_code;
 
 --6--
-/* Schema setup practice; see ERD in question PDF */
+/* Table relationship practice; see ERD in question PDF */
+
+IF (NOT EXISTS (SELECT * FROM sys.tables WHERE name IN ('invoice', 'payment', 'transact', 'currency') AND schema_id = SCHEMA_ID('TomsTest')))
+BEGIN
+    CREATE TABLE TomsTest.invoice (
+        InvoiceNum VARCHAR(20) NOT NULL PRIMARY KEY,
+        InvoiceDate DATE,
+        InvoiceAmount DECIMAL(10,2),
+        CurrencyCode NVARCHAR(3) NOT NULL,
+        FOREIGN KEY (CurrencyCode) REFERENCES currency(CurrencyCode)
+    );
+    CREATE TABLE TomsTest.payment (
+        InvoiceNum VARCHAR(20) NOT NULL,
+        TransactID VARCHAR(25) NOT NULL,
+        PaymentAmount DECIMAL(12,2),
+        CurrencyCode NVARCHAR(3),
+        PRIMARY KEY (InvoiceNum, TransactID),
+        FOREIGN KEY (InvoiceNum) REFERENCES TomsTest.invoice(InvoiceNum),
+        FOREIGN KEY (TransactID) REFERENCES TomsTest.transact(TransactID),
+        FOREIGN KEY (CurrencyCode) REFERENCES TomsTest.currency(CurrencyCode)
+    );
+    CREATE TABLE TomsTest.currency (
+        CurrencyCode NVARCHAR(3) NOT NULL PRIMARY KEY,
+        CurrencyName NVARCHAR(36),
+    );
+    CREATE TABLE TomsTest.transact (
+        TransactID VARCHAR(25) NOT NULL PRIMARY KEY,
+        TransactDate date,
+    );
+END;
