@@ -88,10 +88,11 @@ IF (NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'infection' AND schema_id 
 BEGIN
 
     CREATE TABLE TomsTest.infection (
-        region_code VARCHAR(10) NOT NULL REFERENCES TomsTest.region (region_code), 
+        region_code VARCHAR(10) NOT NULL, 
         dt DATE NOT NULL, 
         new_cases DECIMAL(10, 0) NOT NULL, 
-        PRIMARY KEY (region_code, dt)
+        PRIMARY KEY (region_code, dt),
+        FOREIGN KEY (region_code) REFERENCES TomsTest.region (region_code)
     );
 
     INSERT INTO TomsTest.infection (region_code, dt, new_cases) VALUES
@@ -109,7 +110,7 @@ GO
 /* 2. Write a query to show regions, dates, new_cases plus a percentage (new_cases as a percentage of
 the total population of the region), and the cumulative total of cases (total new_cases for the
 region up until that date). The number of decimal places in the percentage is not important - no
-need to round it. The result shoul be as follows:
+need to round it. The result should be as follows:
 
 region_code region_name      dt         new_cases  pct          cumulative_total
 ----------- ---------------- ---------- ---------- ------------ -----------------
@@ -126,7 +127,7 @@ SELECT
     reg.region_name,
     inf.dt,
     inf.new_cases,
-    (inf.new_cases / reg.population) AS pct,
+    (inf.new_cases / CAST(reg.population AS DECIMAL(10, 5))) AS pct,
     SUM(inf.new_cases) OVER (PARTITION BY inf.region_code ORDER BY inf.dt) AS cumulative_total
 FROM TomsTest.region AS reg
 JOIN TomsTest.infection AS inf ON reg.region_code = inf.region_code
