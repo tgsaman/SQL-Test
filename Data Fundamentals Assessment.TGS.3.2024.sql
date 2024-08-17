@@ -1,3 +1,12 @@
+-- "Run on click" scripting --
+/* delete this if you don't want my code to add a new databse to your server! */
+
+CREATE DBO TomsTestDBO;
+USE TomsTestDBO;
+Create schema TomsTest
+Create user reviewer with password = '';
+ALTER USER reviewer WITH DEFAULT_SCHEMA = TomsTest
+
 --1--
 
 CREATE TABLE parkinglot (txt VARCHAR(500) NOT NULL PRIMARY KEY);
@@ -169,3 +178,39 @@ group by parent_loc)
 select
 top (10) * from loc
     join cnt_codes on cnt_codes.parent_loc = loc.parent_loc;
+
+-- 5-- 
+CREATE TABLE asset (asset_num INTEGER NOT NULL PRIMARY KEY, account_num VARCHAR(10) NOT NULL,
+currency_code CHAR(3) NOT NULL, amount DECIMAL(10,2));
+INSERT INTO asset (asset_num, account_num, currency_code, amount)
+VALUES
+(11,'A32814','GBP', 82470)
+,(12,'A70155','EUR', 92230)
+,(13,'A83866','USD',268105)
+,(14,'A32814','USD',191400)
+,(15,'A70155','EUR',129000)
+,(16,'A16786','HKD',300400)
+,(17,'A70155','GBP',601000)
+,(18,'A32814','EUR', 45500)
+,(19,'A83866','EUR', 23850)
+,(20,'A83866','EUR',118090);
+
+/* Write a query that returns one row per account_num and currency code, but only include the result
+the rows for the account numbers (identified by account_num) that have rows for both EUR and
+GBP currency_codes. Include the total amount and a count of the number of rows in the original
+table. 
+
+Your result should have 5 rows as follows:
+
+account_num currency_code amount       cnt
+----------- ------------- ------------ -----
+A32814      EUR           45500.00     1
+A32814      GBP           82470.00     1
+A32814      USD           191400.00    1
+A70155      EUR           221230.00    2
+A70155      GBP           601000.00    1 */
+
+select * from asset;
+
+--6--
+/* Schema setup practice; see ERD in question PDF */
