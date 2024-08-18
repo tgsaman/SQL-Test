@@ -1,6 +1,6 @@
 This repository contains an intermediate SQL exam I completed for my Data Fundamentals class, part of an overall data engineering technical education program. You should be able to check my work with just a few clicks, if you've got a SQL server running. Connect to your preferred server and run this through the command line or an application like Azure Data Studio, and you should get a new DBO, two schemas, and a set of tables across both. 
 
-The work you see here was completed individually, before being checked against peer exams to facilitate learning and exchange of best practice. To perserve the security of those class servers, tables and transformations in this file have been engineered to plugin to any SQL Server you have access to. This practice exam will create it's own DBO and Schema on run, if you'd like to do that.
+The work you see here was completed individually, before being checked against peer exams to facilitate learning and exchange of best practice. To perserve the security of those class servers, tables and transformations in this file have been engineered to plugin to any SQL Server you have access to. This practice exam will create it's own DBO and Schema on run.
 
 In this class, SQL mastery was expected before moving on to the secondary and tertiary aspects of the course, setting up automated, triggered, or manual data transformation pipelines and then orchestrating data processing across parallel server clusters. This repo is meant to only display the SQL fundamentals behind that skillset.
 
