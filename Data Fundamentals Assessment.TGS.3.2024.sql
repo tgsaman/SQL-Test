@@ -56,7 +56,7 @@ WITH pos_indeces AS (
     charindex('/', txt) AS first_slash,
     charindex('/', txt, (charindex('/', txt, 1))+1) AS second_slash,
     charindex('$', txt) AS cashmoney
-    from parkinglot)
+    from TomsTest.parkinglot)
 
 SELECT
 substring(txt, 1, [first_slash]-1) AS vehicle,
@@ -226,7 +226,7 @@ WITH cnt_codes AS (
 SELECT
 parent_loc,
 COUNT(code) AS cnt
-FROM loc
+FROM TomsTest.loc
 GROUP BY parent_loc
 )
 
@@ -285,11 +285,11 @@ SELECT
     SUM(amount) AS totalamount, 
     COUNT(*) AS cnt 
 FROM 
-    asset
+    TomsTest.asset
 WHERE 
     account_num IN (
         SELECT account_num 
-        FROM asset 
+        FROM TomsTest.asset 
         WHERE currency_code IN ('EUR', 'GBP')
         GROUP BY account_num
         HAVING COUNT(DISTINCT currency_code) = 2
